@@ -1,4 +1,5 @@
 # React Udacity Project 2 - Long Nguyen Hoang
+#  Employee Polls Web App
 
 ## INSTRUCTION TO RUN THIS PROJECT
 - Run npm install to install all dependencies
