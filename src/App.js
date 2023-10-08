@@ -1,58 +1,69 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React, { useEffect } from "react";
+import "./App.css";
+import { connect } from "react-redux";
+import { handleInitialData } from "./actions/shared";
+import { Route, Routes } from "react-router-dom";
+import Login from "./components/Login";
+import SecureRoute from "./components/SecureRoute";
+import Dashboard from "./components/Dashboard";
+import Leaderboard from "./components/Leaderboard";
+import PollPage from "./components/PollPage";
+import NewPoll from "./components/NewPoll";
+import PageNotFound from "./components/PageNotFound";
+import Nav from "./components/Nav";
 
-function App() {
+function App({ dispatch, loggedIn }) {
+  useEffect(() => {
+    dispatch(handleInitialData());
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+    <div className="container mx-auto py-4">
+      {loggedIn && <Nav />}
+      <Routes>
+        <Route path="/login" exact element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <SecureRoute>
+              <Dashboard />
+            </SecureRoute>
+          }
+        />
+        <Route
+          path="/leaderboard"
+          exact
+          element={
+            <SecureRoute>
+              <Leaderboard />
+            </SecureRoute>
+          }
+        />
+        <Route
+          path="/questions/:id"
+          element={
+            <SecureRoute>
+              <PollPage />
+            </SecureRoute>
+          }
+        />
+        <Route
+          path="/add"
+          exact
+          element={
+            <SecureRoute>
+              <NewPoll />
+            </SecureRoute>
+          }
+        />
+        <Route path="/404" exact element={<PageNotFound />} />
+      </Routes>
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = ({ authedUser }) => ({
+  loggedIn: !!authedUser,
+});
+
+export default connect(mapStateToProps)(App);
